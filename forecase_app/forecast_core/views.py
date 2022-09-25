@@ -13,7 +13,7 @@ from dateutil.relativedelta import relativedelta
 # get input data and number of data points
 url_list = [
     'https://disk-usage1.s3.ap-southeast-1.amazonaws.com/logical_disk_usage_daily.csv',
-    'https://disk-usage1.s3.ap-southeast-1.amazonaws.com/logical_disk_usage_daily.csv'
+    'https://disk-usage1.s3.ap-southeast-1.amazonaws.com/logical_disk_usage_daily2.csv'
 ]
 
 final_data_list = []
@@ -24,7 +24,7 @@ class Predict:
     def get_input_data(self, url_source):
         url = url_source
         s = requests.get(url).content
-        return pd.read_csv(io.StringIO(s.decode('utf-8')))
+        return (pd.read_csv(io.StringIO(s.decode('utf-8'))))
 
     def predict(self):
         for i in url_list:
@@ -49,7 +49,10 @@ class Predict:
             days_in_six_months = (next_six_months - now).days
             days_in_twelve_months = (next_twelve_months - now).days
 
+            # print(days_in_three_months,days_in_six_months,days_in_twelve_months)
+            # forecast_df = pd.DataFrame()
             # forecase the future for 12 months
+
             def forecast():
                 period = days_in_twelve_months
 
@@ -69,29 +72,32 @@ class Predict:
                 return (pd.DataFrame(forecast_df[['ds', 'yhat_lower', 'yhat_upper', 'yhat']]).to_dict(orient='records'),
                         forecast_df['yhat'].to_list(), forecast_df['yhat_lower'].to_list(),
                         forecast_df['yhat_upper'].to_list())
-            forecast_lst = forecast()
+                # return(forecast_df['yhat'].to_list())
 
+            forecast_lst, yhat, lower, upper = forecast()
+
+            # prepare data for visualization
             graph_data_arr = []
 
             # calculate fluctuation rate
             def get_fluctuation_rate(today_val, final_val):
                 if today_val >= final_val:
-                    return ['Decrease', ((today_val - final_val) / today_val) * 100]
+                    return (['Decrease', ((today_val - final_val) / today_val) * 100])
                 else:
-                    return ['Increase', ((final_val - today_val) / today_val) * 100]
+                    return (['Increase', ((final_val - today_val) / today_val) * 100])
 
                 # generate list of date from today to next 3, 6, and 12 months
 
             def get_date_list(sdate, edate):
                 # print(sdate,edate)
-                return pd.date_range(sdate, edate + relativedelta(days=+1), freq='d').strftime('%-m-%-d-%Y').to_list()
+                return (pd.date_range(sdate, edate + relativedelta(days=+1), freq='d').strftime('%-m-%-d-%Y').to_list())
 
             # def get_forecast_data_list():
             # generate the visualization data
             def get_graph_data(forecast_lst, yhat, lower, upper, edate):
                 date_list = get_date_list(forecast_lst[0]['ds'], edate)  # get list of date
                 forecast_data_points = len(forecast_lst) - input_data_len  # get number of forecasted data points
-                tick_amount = input_data_len  # get number of point in x-axis
+                tick_amount = input_data_len  # get number of point in x axis
                 today_date = now.strftime('%-m-%-d-%Y')  # set today date in mm-dd-yyyy
                 # print(today_date)
                 fluctuation_rate = get_fluctuation_rate(forecast_lst[0]['yhat'], forecast_lst[input_data_len - 1][
