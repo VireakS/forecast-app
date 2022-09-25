@@ -156,4 +156,4 @@ class ForecastViewSet(viewsets.ModelViewSet):
             forcast.save()
         except Exception as e:
             return Response({'msg': str(e)}, status=400)
-        return Response({'msg': 'Done', 'leng': json.loads(data)})
+        return Response({'msg': 'Done'})
