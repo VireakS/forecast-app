@@ -28,7 +28,7 @@ class Predict:
 
     def predict(self):
         for i in url_list:
-            data = get_input_data(i)
+            data = self.get_input_data(i)
             print(data.tail())
             input_data_len = len(data)
             # print("inp",input_data_len)
