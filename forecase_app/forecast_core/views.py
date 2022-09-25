@@ -24,7 +24,7 @@ class Predict:
     def get_input_data(self, url_source):
         url = url_source
         s = requests.get(url).content
-        return (pd.read_csv(io.StringIO(s.decode('utf-8'))))
+        return pd.read_csv(io.StringIO(s.decode('utf-8')))
 
     def predict(self):
         for i in url_list:
@@ -137,7 +137,7 @@ class Predict:
 
             set_graph_data(yhat, lower, upper)
             final_data_list.append(graph_data_arr)
-            return json.dumps(final_data_list, indent=2, default=str)
+        return json.dumps(final_data_list, indent=2, sort_keys=True, default=str)
 
 
 class ForecastViewSet(viewsets.ModelViewSet):
@@ -149,10 +149,11 @@ class ForecastViewSet(viewsets.ModelViewSet):
             predict = Predict()
             data = predict.predict()
             forcast = ForecastModel()
+            print(len(json.loads(data)))
             forcast.json = json.loads(data)
             forcast.created_at = datetime.now()
 
             forcast.save()
         except Exception as e:
             return Response({'msg': str(e)}, status=400)
-        return Response({'msg': 'Done'})
+        return Response({'msg': 'Done', 'leng': json.loads(data)})
