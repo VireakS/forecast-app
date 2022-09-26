@@ -9,6 +9,7 @@ import requests
 from rest_framework.response import Response
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from django.shortcuts import render
 
 # get input data and number of data points
 url_list = [
@@ -138,6 +139,10 @@ class Predict:
             set_graph_data(yhat, lower, upper)
             final_data_list.append(graph_data_arr)
         return json.dumps(final_data_list, indent=2, sort_keys=True, default=str)
+
+
+def index(request):
+    return render(request, 'build/index.html')
 
 
 class ForecastViewSet(viewsets.ModelViewSet):
