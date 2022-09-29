@@ -12,8 +12,8 @@ from dateutil.relativedelta import relativedelta
 from django.shortcuts import render
 
 url_list = [
-    'https://disk-usage1.s3.ap-southeast-1.amazonaws.com/logical_disk_usage_daily.csv',
-    'https://disk-usage1.s3.ap-southeast-1.amazonaws.com/logical_disk_usage_daily2.csv'
+    'https://kitkod.s3.ap-southeast-1.amazonaws.com/logical_disk_usage_daily.csv',
+    'https://kitkod.s3.ap-southeast-1.amazonaws.com/logical_disk_usage_daily2.csv'
 ]
 
 final_data_list = []
