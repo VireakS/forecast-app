@@ -26,7 +26,7 @@ from django.conf.urls.static import static
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Forecase API",
+        title="Forecast API",
         default_version='v1',
         description="Rest API for ",
         terms_of_service="https://www.jaseci.org",
