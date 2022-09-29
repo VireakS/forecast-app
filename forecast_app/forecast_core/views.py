@@ -76,7 +76,7 @@ class Predict:
                 elif today_val <= final_val:
                     return (['Increase', ((final_val - today_val) / today_val) * 100])
                 else:
-                    return (['Fluctuation', 0)
+                    return (['Fluctuation', 0])
 
             # generate list of date from today to next 3, 6, and 12 months
             def get_date_list(sdate, edate):
