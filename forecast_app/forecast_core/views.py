@@ -71,12 +71,13 @@ class Predict:
 
             # calculate fluctuation rate
             def get_fluctuation_rate(today_val, final_val):
-                if today_val >= final_val:
-                    return (['Decrease', ((today_val - final_val) / today_val) * 100])
-                elif today_val <= final_val:
-                    return (['Increase', ((final_val - today_val) / today_val) * 100])
-                else:
-                    return (['Fluctuation', 0])
+                rate = ((today_val-final_val)/today_val)*100
+                if rate>0:
+                    return(['Decrease',abs(rate)])
+                elif rate<0:
+                    return(['Increase',abs(rate)])
+                else :
+                    return(['Fluctuation', 0])
 
             # generate list of date from today to next 3, 6, and 12 months
             def get_date_list(sdate, edate):
