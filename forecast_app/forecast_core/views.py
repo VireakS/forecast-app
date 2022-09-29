@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render
 
-# get input data and number of data points
 url_list = [
     'https://disk-usage1.s3.ap-southeast-1.amazonaws.com/logical_disk_usage_daily.csv',
     'https://disk-usage1.s3.ap-southeast-1.amazonaws.com/logical_disk_usage_daily2.csv'
@@ -32,28 +31,20 @@ class Predict:
             data = self.get_input_data(i)
             print(data.tail())
             input_data_len = len(data)
-            # print("inp",input_data_len)
             # create today date and get prediction duration
-            # get today date
-            # now = datetime.strptime('2022/9/18', '%Y/%m/%d')
             now = datetime.today()
-            # print(now)
 
             # get date in next 3, 6, and 12 months
             next_three_months = now + relativedelta(months=+3)
             next_six_months = now + relativedelta(months=+6)
             next_twelve_months = now + relativedelta(months=+12)
-            # print(next_three_months,next_six_months,next_twelve_months)
 
             # get numbers of days in next 3, 6, and 12 months
             days_in_three_months = (next_three_months - now).days
             days_in_six_months = (next_six_months - now).days
             days_in_twelve_months = (next_twelve_months - now).days
 
-            # print(days_in_three_months,days_in_six_months,days_in_twelve_months)
-            # forecast_df = pd.DataFrame()
-            # forecase the future for 12 months
-
+            # forecase the future
             def forecast():
                 period = days_in_twelve_months
 
@@ -68,12 +59,10 @@ class Predict:
                 # make prediction
                 future = m.make_future_dataframe(periods=period)
                 forecast_df = m.predict(future)
-                # print(type(forecast_df))
                 # return the predicted data
                 return (pd.DataFrame(forecast_df[['ds', 'yhat_lower', 'yhat_upper', 'yhat']]).to_dict(orient='records'),
                         forecast_df['yhat'].to_list(), forecast_df['yhat_lower'].to_list(),
                         forecast_df['yhat_upper'].to_list())
-                # return(forecast_df['yhat'].to_list())
 
             forecast_lst, yhat, lower, upper = forecast()
 
@@ -87,10 +76,8 @@ class Predict:
                 else:
                     return (['Increase', ((final_val - today_val) / today_val) * 100])
 
-                # generate list of date from today to next 3, 6, and 12 months
-
+            # generate list of date from today to next 3, 6, and 12 months
             def get_date_list(sdate, edate):
-                # print(sdate,edate)
                 return (pd.date_range(sdate, edate + relativedelta(days=+1), freq='d').strftime('%-m-%-d-%Y').to_list())
 
             # def get_forecast_data_list():
@@ -100,7 +87,6 @@ class Predict:
                 forecast_data_points = len(forecast_lst) - input_data_len  # get number of forecasted data points
                 tick_amount = input_data_len  # get number of point in x axis
                 today_date = now.strftime('%-m-%-d-%Y')  # set today date in mm-dd-yyyy
-                # print(today_date)
                 fluctuation_rate = get_fluctuation_rate(forecast_lst[0]['yhat'], forecast_lst[input_data_len - 1][
                     'yhat'])  # calculate fluctuation rate
                 free_space = forecast_lst[input_data_len - 1]['yhat']  # set free space amount
@@ -108,7 +94,6 @@ class Predict:
                 total_space = 0  # set total space amount
 
                 # add data into graph visualization data
-                # print(forecast_lst[0])
                 tmp_dict = {"duration": date_list, "forecastDataPoint": forecast_data_points,
                             "tickAmount": tick_amount, "today": today_date, "fluctuation": fluctuation_rate,
                             "freeSpace": free_space,
@@ -117,8 +102,7 @@ class Predict:
                             }
                 graph_data_arr.append(tmp_dict)
 
-                # set data into the array for visualization
-
+            # set data into the array for visualization
             def set_graph_data(yhat, lower, upper):
                 # loop to get data for 3, 6, and 12 months
                 for i in range(0, 3):
@@ -127,7 +111,6 @@ class Predict:
                     if i == 0:
                         tmp_list = list(forecast_lst[0:days_in_three_months + input_data_len])
                         tmp_edate = next_three_months
-                        # print(tmp_list, input_data_len)
                     if i == 1:
                         tmp_list = list(forecast_lst[0:days_in_six_months + input_data_len])
                         tmp_edate = next_six_months
